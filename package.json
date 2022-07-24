@@ -1,0 +1,12 @@
+{
+  "name": "happy-plant",
+  "description": "",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "http-server -c-1"
+  },
+  "keywords": ["pwa", "progressive", "web", "app", "ikt", "htw", "fiw"],
+  "author": "Julia R.",
+  "license": "ISC"
+}
