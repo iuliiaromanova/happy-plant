@@ -1,16 +1,23 @@
 const express = require('express');
 const cors = require('cors');
-const routes = require('./routes');
+const postsRoutes = require('./routes/posts.routes');
+const uploadRoutes = require('./routes/upload.routes');
+const downloadRoute = require('./routes/download.routes');
+const deleteRoute = require('./routes/delete.routes');
+
 const mongoose = require('mongoose');
 require('dotenv').config();
 
 const app = express();
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 
 app.use(express.json());
-// enable cors for all requests
 app.use(cors());
-app.use('/', routes);
+
+app.use('/posts', postsRoutes);
+app.use('/upload', uploadRoutes);
+app.use('/download', downloadRoute);
+app.use('/delete', deleteRoute);
 
 app.listen(PORT, (error) => {
     if (error) {
