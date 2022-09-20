@@ -1,6 +1,24 @@
+importScripts('/src/js/idb.js');
+importScripts('/src/js/db.js');
+
 const CACHE_VERSION = 3;
 const CURRENT_STATIC_CACHE = 'static-v' + CACHE_VERSION;
 const CURRENT_DYNAMIC_CACHE = 'dynamic-v' + CACHE_VERSION;
+
+const STATIC_FILES = [
+                    '/',
+                    '/index.html',
+                    '/src/js/app.js',
+                    '/src/js/feed.js',
+                    '/src/js/material.min.js',
+                    '/src/js/idb.js',
+                    '/src/css/app.css',
+                    '/src/css/feed.css',
+                    '/src/images/img-1-klein.jpg',
+                    'https://fonts.googleapis.com/css?family=Roboto:400,700',
+                    'https://fonts.googleapis.com/icon?family=Material+Icons',
+                    'https://code.getmdl.io/1.3.0/material.blue_grey-red.min.css'
+]
 
 self.addEventListener('install', event => {
     console.log('service worker --> installing ...', event);
@@ -8,19 +26,7 @@ self.addEventListener('install', event => {
         caches.open(CURRENT_STATIC_CACHE)
             .then( cache => {
                 console.log('Service-Worker-Cache erzeugt und offen');
-                cache.addAll([
-                    '/',
-                    '/index.html',
-                    '/src/js/app.js',
-                    '/src/js/feed.js',
-                    '/src/js/material.min.js',
-                    '/src/css/app.css',
-                    '/src/css/feed.css',
-                    '/src/images/img-1-klein.jpg',
-                    'https://fonts.googleapis.com/css?family=Roboto:400,700',
-                    'https://fonts.googleapis.com/icon?family=Material+Icons',
-                    'https://code.getmdl.io/1.3.0/material.blue_grey-red.min.css'
-                ]);
+                cache.addAll(STATIC_FILES);
             })
     );
 })
@@ -47,21 +53,43 @@ self.addEventListener('fetch', event => {
     // if request is made for web page url must contains http.
     if (!(event.request.url.indexOf('http') === 0)) return; // skip the request if request is not made with http protocol
 
-    event.respondWith(
-        caches.match(event.request)
-            .then( response => {
-                if(response) {
-                    return response;
-                } else {
-                    return fetch(event.request)
-                        .then( res => {     // nicht erneut response nehmen, haben wir schon
-                            return caches.open(CURRENT_DYNAMIC_CACHE)      // neuer, weiterer Cache namens dynamic
-                                .then( cache => {
-                                    cache.put(event.request.url, res.clone());
-                                    return res;
-                                })
-                        });
-                }
-            })
-    );
+    const url = 'http://localhost:3001/posts';
+        if(event.request.url.indexOf(url) >= 0) {
+            event.respondWith(
+                fetch(event.request)
+                    .then ( res => {
+                        const clonedResponse = res.clone();
+                        clearAllData('posts')
+                        .then( () => {
+                            return clonedResponse.json()
+                        })
+                        .then( data => {
+                            for(let key in data)
+                            {
+                                console.log('write data', data[key]);
+                                writeData('posts', data[key]);
+                            }
+                         })
+                      });
+                     return res;
+                 })
+            )
+        } else {
+            event.respondWith(
+                caches.match(event.request)
+                    .then( response => {
+                        if(response) {
+                            return response;
+                        } else {
+                            return fetch(event.request)
+                                .then( res => {     // nicht erneut response nehmen, haben wir schon
+                                    return caches.open(CURRENT_DYNAMIC_CACHE)      // neuer, weiterer Cache namens dynamic
+                                        .then( cache => {
+                                            cache.put(event.request.url, res.clone());
+                                            return res;
+                                        })
+                                });
+                        }
+                    })
+    )}
 })

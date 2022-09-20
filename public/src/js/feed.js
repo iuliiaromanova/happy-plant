@@ -50,11 +50,25 @@ function updateUI(data) {
 
 }
 
+let networkDataReceived = false;
+
 fetch('http://localhost:3001/posts')
     .then((res) => {
       return res.json();
     })
     .then((data) => {
-      updateUI(data);
+        networkDataReceived = true;
+        console.log('From backend ...', data);
+        updateUI(data);
     });
+
+if('indexedDB' in window) {
+    readAllData('posts')
+        .then( data => {
+            if(!networkDataReceived) {
+                console.log('From cache ...', data);
+                updateUI(data);
+            }
+        })
+}
 
