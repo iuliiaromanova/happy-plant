@@ -15,32 +15,46 @@ shareImageButton.addEventListener('click', openCreatePostModal);
 
 closeCreatePostModalButton.addEventListener('click', closeCreatePostModal);
 
-function createCard() {
+function createCard(card) {
   let cardWrapper = document.createElement('div');
   cardWrapper.className = 'shared-moment-card mdl-card mdl-shadow--2dp';
   let cardTitle = document.createElement('div');
   cardTitle.className = 'mdl-card__title';
-  cardTitle.style.backgroundImage = 'url("/src/images/pflanze-1.jpg")';
+  let image = new Image();
+  image.src = card.image_id;
+  cardTitle.style.backgroundImage = 'url('+ image.src +')';
+//  cardTitle.style.backgroundImage = 'url("/src/images/pflanze-1.jpg")';
   cardTitle.style.backgroundSize = 'cover';
   cardTitle.style.height = '180px';
   cardWrapper.appendChild(cardTitle);
   let cardTitleTextElement = document.createElement('h2');
   cardTitleTextElement.className = 'mdl-card__title-text';
-  cardTitleTextElement.textContent = 'Rosetten-Dickblatt, Aeonium arboreum';
+  cardTitleTextElement.textContent = card.title;
+//  cardTitleTextElement.textContent = 'Rosetten-Dickblatt, Aeonium arboreum';
   cardTitle.appendChild(cardTitleTextElement);
   let cardSupportingText = document.createElement('div');
   cardSupportingText.className = 'mdl-card__supporting-text';
-  cardSupportingText.textContent = 'Rosetten-Dickblatt';
+  cardSupportingText.textContent = card.location;
+//  cardSupportingText.textContent = 'Rosetten-Dickblatt';
   cardSupportingText.style.textAlign = 'center';
   cardWrapper.appendChild(cardSupportingText);
   componentHandler.upgradeElement(cardWrapper);
   sharedMomentsArea.appendChild(cardWrapper);
 }
 
-fetch('https://httpbin.org/get')
-    .then(function(res) {
+function updateUI(data) {
+    for(let card of data)
+    {
+       createCard(card);
+    }
+
+}
+
+fetch('http://localhost:3001/posts')
+    .then((res) => {
       return res.json();
     })
-    .then(function(data) {
-      createCard();
+    .then((data) => {
+      updateUI(data);
     });
+
