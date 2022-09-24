@@ -1,7 +1,7 @@
 importScripts('/src/js/idb.js');
 importScripts('/src/js/db.js');
 
-const CACHE_VERSION = 3;
+const CACHE_VERSION = 13;
 const CURRENT_STATIC_CACHE = 'static-v' + CACHE_VERSION;
 const CURRENT_DYNAMIC_CACHE = 'dynamic-v' + CACHE_VERSION;
 
@@ -69,7 +69,6 @@ self.addEventListener('fetch', event => {
                                 console.log('write data', data[key]);
                                 writeData('posts', data[key]);
                             }
-                         })
                       });
                      return res;
                  })
@@ -91,5 +90,6 @@ self.addEventListener('fetch', event => {
                                 });
                         }
                     })
-    )}
+             )
+    }
 })
