@@ -161,7 +161,7 @@ closeCreatePostModalButton.addEventListener('click', closeCreatePostModal);
 
 function createCard(card) {
   let cardWrapper = document.createElement('div');
-  cardWrapper.className = 'shared-moment-card mdl-card mdl-shadow--2dp';
+  cardWrapper.className = 'col-md-4 col-sm-4 shared-moment-card mdl-card mdl-shadow--2dp';
   let cardTitle = document.createElement('div');
   cardTitle.className = 'mdl-card__title';
   let image = new Image();
@@ -193,7 +193,6 @@ fetch('http://localhost:3001/posts')
       return res.json();
     })
     .then((data) => {
-       // networkDataReceived = true;
         console.log('From backend ...', data);
         updateUI(data);
     })
@@ -306,5 +305,3 @@ captureButton.addEventListener('click', event => {
 imagePicker.addEventListener('change', event => {
     file = event.target.files[0];
 });
-
-//let networkDataReceived = false;
