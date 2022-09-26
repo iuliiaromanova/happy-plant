@@ -1,7 +1,7 @@
 importScripts('/src/js/idb.js');
 importScripts('/src/js/db.js');
 
-const CACHE_VERSION = 13;
+const CACHE_VERSION = 50 + Math.floor(Math.random() * 10000);
 const CURRENT_STATIC_CACHE = 'static-v' + CACHE_VERSION;
 const CURRENT_DYNAMIC_CACHE = 'dynamic-v' + CACHE_VERSION;
 
@@ -58,6 +58,7 @@ self.addEventListener('fetch', event => {
             event.respondWith(
                 fetch(event.request)
                     .then ( res => {
+                    if(event.request.method === 'GET') {
                         const clonedResponse = res.clone();
                         clearAllData('posts')
                         .then( () => {
@@ -66,10 +67,12 @@ self.addEventListener('fetch', event => {
                         .then( data => {
                             for(let key in data)
                             {
+                                console.log('write key', key);
                                 console.log('write data', data[key]);
                                 writeData('posts', data[key]);
                             }
                       });
+                      }
                      return res;
                  })
             )
